@@ -1,15 +1,26 @@
 import { CCClass, sys, log, warn } from "cc";
 import { handler } from "./util";
 
+export enum HttpCode {
+    kSuccess = 0,
+    kTimeout = 10000,
+    kUnknown = 10001,
+    kSessionTimeout = -8,
+    kIAmInBlocklist = -3013,
+    kUserIsInMyBlocklist = -3014
+}
+
 export class HttpService
 {
     private static _inst:HttpService;
+
+    host: string = "http://127.0.0.1:3000"
 
     private constructor()
     {
     }
 
-    static getInst():HttpService
+    static shared():HttpService
     {
         if(!this._inst)
         {
@@ -28,12 +39,13 @@ export class HttpService
             }
             url += this.getQueryString(params);
         }
-        
+        url = this.host + url;
         this.doHttp(url, headers, null, "GET", cb);
     }
 
     doPost(url:string, headers, params, cb:handler)
     {
+        url = this.host + url;
         this.doHttp(url, headers, params, "POST", cb);
     }
 
@@ -146,13 +158,4 @@ export class HttpService
         }
         return tmps.join("&");
     }
-}
-
-export enum HttpCode {
-    kSuccess = 0,
-    kTimeout = 10000,
-    kUnknown = 10001,
-    kSessionTimeout = -8,
-    kIAmInBlocklist = -3013,
-    kUserIsInMyBlocklist = -3014
 }

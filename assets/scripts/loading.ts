@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Node, Button, Label, log } from 'cc';
+import { _decorator, Component, Node, Button, Label, log, director } from 'cc';
 import { HttpService } from './component/httpservice';
 import { gen_handler } from './component/util';
 const { ccclass, property } = _decorator;
@@ -25,7 +25,7 @@ export class loading extends Component {
     @property(Button)
     startBtn : Button | null = null;
 
-    host: string = "http://127.0.0.1:3000"
+    // host: string = "http://127.0.0.1:3000"
 
     start () {
         console.log("hello world");
@@ -33,13 +33,19 @@ export class loading extends Component {
     }
 
     clickBtn() {
-        var lcbel = this.startBtn.node.getChildByName('Label').getComponent(Label);
-        lcbel.string = "hello";
-        log("click btn...");
-        let hand = gen_handler((code, data)=>{
-            log("hello world:"+data.name);
-        }, "http://127.0.0.1:3000");
-        HttpService.getInst().doGet(this.host + '/users', null, null, hand)
+        // var lcbel = this.startBtn.node.getChildByName('Label').getComponent(Label);
+        // lcbel.string = "hello";
+        // log("click btn...");
+        // let hand = gen_handler((code, data)=>{
+        //     log("hello world:"+data.name);
+        // }, "http://127.0.0.1:3000");
+        // HttpService.getInst().doGet(this.host + '/users', null, null, hand)
+        director.loadScene('login')
+    }
+
+    initializeManager() {
+        // https://forum.cocos.org/t/cocoscreator-ts/98301
+
     }
 
     // update (deltaTime: number) {
