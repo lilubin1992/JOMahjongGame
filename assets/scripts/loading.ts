@@ -40,7 +40,7 @@ export class loading extends Component {
         //     log("hello world:"+data.name);
         // }, "http://127.0.0.1:3000");
         // HttpService.getInst().doGet(this.host + '/users', null, null, hand)
-        director.loadScene('login')
+        director.loadScene('mjgame')
     }
 
     initializeManager() {
