@@ -13,6 +13,31 @@ const { ccclass, property } = _decorator;
  * ManualUrl = https://docs.cocos.com/creator/3.4/manual/zh/
  *
  */
+
+export enum MJType {
+    WAN = "character",
+    TONG = "dot",
+    TIAO = "bamboo"
+}
+
+export enum MJNum {
+    One = 1,
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    Eight,
+    Nine
+}
+
+enum SeatSide {
+    Pre = "L",
+    Myself = "B",
+    Next = "R",
+    Cross = "B"
+}
  
 @ccclass('MahjongMgr')
 export class MahjongMgr extends Component {
@@ -24,21 +49,32 @@ export class MahjongMgr extends Component {
     }
 
     @property(SpriteAtlas)
-    private bottomAtlas: SpriteAtlas = null;
+    private bottomFoldsAtlas: SpriteAtlas = null;
+
+    @property(SpriteAtlas)
+    private leftFoldsAtlas: SpriteAtlas = null;
+
+    @property(SpriteAtlas)
+    private rightFoldsAtlas: SpriteAtlas = null;
+
+    @property(SpriteAtlas)
+    private myselfHoldsAtlas: SpriteAtlas = null;
+
 
     @property(SpriteFrame)
     private B_bamboo_1: SpriteFrame = null;
 
-    sayhello(params:string) {
-        console.log("hello");
+    getMJName(type: MJType, num: MJNum): string {
+        return type + "_" + num;
     }
 
-    /**
-     * 
-     */
     public getBottomMJSpriteFrame(mjId: string): SpriteFrame {
-        var atlas = this.bottomAtlas;
-        return this.bottomAtlas.getSpriteFrame(mjId);
+        return this.bottomFoldsAtlas.getSpriteFrame(mjId);
+    }
+
+    public getHoldMJSpriteFrame(type: MJType, num: MJNum): SpriteFrame {
+        var mj = this.getMJName(type, num);
+        return this.bottomFoldsAtlas.getSpriteFrame(mj);
     }
 
     start () {

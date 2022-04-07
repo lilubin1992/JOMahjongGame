@@ -2425,8 +2425,20 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "bottomAtlas": {
+    "bottomFoldsAtlas": {
       "__uuid__": "4a0460e5-f485-4e2e-8d3d-2598f80a734c",
+      "__expectedType__": "cc.SpriteAtlas"
+    },
+    "leftFoldsAtlas": {
+      "__uuid__": "bdb5d318-8138-434a-8dec-a7f30bcfa37f",
+      "__expectedType__": "cc.SpriteAtlas"
+    },
+    "rightFoldsAtlas": {
+      "__uuid__": "780e0aa5-1d75-4267-822e-590d24cbbee5",
+      "__expectedType__": "cc.SpriteAtlas"
+    },
+    "myselfHoldsAtlas": {
+      "__uuid__": "09e1dcbb-2473-4f9c-a90c-c6c760e9640e",
       "__expectedType__": "cc.SpriteAtlas"
     },
     "B_bamboo_1": {

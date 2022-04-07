@@ -1,6 +1,6 @@
 
 import { _decorator, Component, Node, find, Sprite, SpriteFrame, resources, SpriteAtlas } from 'cc';
-import { MahjongMgr } from './MahjongMgr';
+import { MahjongMgr, MJNum, MJType } from './MahjongMgr';
 const { ccclass, property } = _decorator;
 
 /**
@@ -39,12 +39,12 @@ export class mjgame extends Component {
         //         thisSprite.spriteFrame = data;
         //     }
         // });
-
+        var spr = MahjongMgr.instance.getMJName(MJType.TIAO, MJNum.Five);
+        console.log("mjname: "+spr);
         // resources.load("textures/MJ/bottom/Z_bottom", SpriteAtlas, (err, atlas) => {
             for (let index = 0; index < 9; index++) {
                 const spriteName = "B_bamboo_"+(index+1);
                 const element = holds.children[index];
-                // MahjongMgr.instance.sayhello("tom");
                 // element.getComponent(Sprite).spriteFrame = atlas.getSpriteFrame(spriteName);
             }
             // var mah = new MahjongMgr();
