@@ -18,12 +18,19 @@ const { ccclass, property } = _decorator;
 @ccclass('mjgame')
 export class mjgame extends Component {
 
+    // private _myHolds: Array<SpriteFrame> = null;
+    private _myHolds = new Array<Sprite>();
+
+    private _bottomFolds = new Array<Sprite>();
+
+    
+
     start () {
         console.log("mjgame start...");
         // var holds = find("Canvas/game/myself/holds", this.node);
-        var tNode = this.node;
-        var game = this.node.getChildByName("game");
-        var holds = this.node.getChildByPath("game/myself/holds");
+        // var tNode = this.node;
+        // var game = this.node.getChildByName("game");
+        // var holds = this.node.getChildByPath("game/myself/holds");
         // for (let index = 0; index < holds.children.length; index++) {
         //     const element = holds.children[index];
         //     var thisSprite = element.getComponent(Sprite);
@@ -39,26 +46,40 @@ export class mjgame extends Component {
         //         thisSprite.spriteFrame = data;
         //     }
         // });
-        var spr = MahjongMgr.instance.getMJName(MJType.TIAO, MJNum.Five);
-        console.log("mjname: "+spr);
+        // var spr = MahjongMgr.instance.getMJName(MJType.TIAO, MJNum.Five);
+        // console.log("mjname: "+spr);
         // resources.load("textures/MJ/bottom/Z_bottom", SpriteAtlas, (err, atlas) => {
-            for (let index = 0; index < 9; index++) {
-                const spriteName = "B_bamboo_"+(index+1);
-                const element = holds.children[index];
+            // for (let index = 0; index < 9; index++) {
+            //     const spriteName = "B_bamboo_"+(index+1);
+            //     const element = holds.children[index];
                 // element.getComponent(Sprite).spriteFrame = atlas.getSpriteFrame(spriteName);
-            }
+            // }
             // var mah = new MahjongMgr();
-            holds.children[1].getComponent(Sprite).spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_1");
+            // holds.children[1].getComponent(Sprite).spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_1");
         // });
-        holds.children[2].getComponent(Sprite).spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_2");
-        holds.children[5].getComponent(Sprite).spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_5");
-        holds.children[0].getComponent(Sprite).spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_8");
+        // holds.children[2].getComponent(Sprite).spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_2");
+        // holds.children[5].getComponent(Sprite).spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_5");
+        // holds.children[0].getComponent(Sprite).spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_8");
+        this.testMJSprite()
+    }
+
+    onLoad() {
+        console.log("mjgame on load...");
 
     }
 
-    // update (deltaTime: number) {
-    //     // [4]
-    // }
+    testMJSprite() {
+        var holds = this.node.getChildByPath("game/myself/holds");
+        for (let index = 0; index < holds.children.length; index++) {
+            const element = holds.children[index];
+            var thisSprite = element.getComponent(Sprite);
+            this._myHolds.push(thisSprite);
+        }
+        this._myHolds[1].spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_1");
+        this._myHolds[2].spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_2");
+        this._myHolds[3].spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_3");
+    }
+
 }
 
 /**
