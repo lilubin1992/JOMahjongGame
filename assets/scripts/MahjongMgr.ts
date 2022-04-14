@@ -14,6 +14,19 @@ const { ccclass, property } = _decorator;
  *
  */
 
+/*
+0 ~ 8 : tong
+9 ~ 17: tiao
+18 ~ 26: wan
+*/
+
+export enum SeatSide {
+    Myself = "Myself",
+    Right = "Right",
+    Left = "Left",
+    Up = "Up"
+}
+
 export enum MJType {
     WAN = "character",
     TONG = "dot",
@@ -32,12 +45,14 @@ export enum MJNum {
     Nine
 }
 
-enum SeatSide {
-    Pre = "L",
+enum MJSide {
+    Left = "L",
     Myself = "B",
-    Next = "R",
-    Cross = "B"
+    Right = "R",
+    Up = "B"
 }
+
+
  
 @ccclass('MahjongMgr')
 export class MahjongMgr extends Component {
@@ -64,18 +79,68 @@ export class MahjongMgr extends Component {
     @property(SpriteFrame)
     private B_bamboo_1: SpriteFrame = null;
 
-    getMJName(type: MJType, num: MJNum): string {
-        return type + "_" + num;
+    getSideFoldsAtlas(side: SeatSide): SpriteAtlas {
+        switch (side) {
+            case SeatSide.Up:
+            case SeatSide.Myself:
+                return this.bottomFoldsAtlas;
+            case SeatSide.Left:
+                return this.leftFoldsAtlas;
+            case SeatSide.Right:
+                return this.rightFoldsAtlas;
+        }
     }
+
+    getMJType(mj: number): MJType {
+        if (mj < 9) {
+            return MJType.TONG;
+        } else if (mj < 18) {
+            return MJType.TIAO;
+        } else {
+            return MJType.WAN;
+        }
+    }
+
+    getMJSide(side: SeatSide): MJSide {
+        switch (side) {
+            case SeatSide.Myself:
+                return MJSide.Myself;
+            case SeatSide.Left:
+                return MJSide.Left;
+            case SeatSide.Right:
+                return MJSide.Right;
+            case SeatSide.Up:
+                return MJSide.Up;
+        }
+    }
+
+    // 获取mj对应的相对数字
+    getMJAbsNum(mj: number): MJNum {
+        return mj % 9 + 1;
+    }
+
+    getMJSpriteFrameName(side: MJSide, type: MJType, num: MJNum): string {
+        return side + '_' + type + "_" + num;
+    }
+
+    getFoldMJSpriteFrame(side: SeatSide, num: number): SpriteFrame {
+        var mjSide = this.getMJSide(side);
+        var mjType = this.getMJType(num);
+        var mjNum = this.getMJAbsNum(num);
+        var mjName = this.getMJSpriteFrameName(mjSide, mjType, mjNum);
+        var atlas = this.getSideFoldsAtlas(side);
+        return atlas.getSpriteFrame(mjName);
+    }
+    
 
     public getBottomMJSpriteFrame(mjId: string): SpriteFrame {
         return this.bottomFoldsAtlas.getSpriteFrame(mjId);
     }
 
-    public getHoldMJSpriteFrame(type: MJType, num: MJNum): SpriteFrame {
-        var mj = this.getMJName(type, num);
-        return this.bottomFoldsAtlas.getSpriteFrame(mj);
-    }
+    // public getHoldMJSpriteFrame(type: MJType, num: MJNum): SpriteFrame {
+    //     var mj = this.getMJName(type, num);
+    //     return this.bottomFoldsAtlas.getSpriteFrame(mj);
+    // }
 
     start () {
         console.log("mahjongmgr start...");

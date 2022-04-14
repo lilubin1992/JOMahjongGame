@@ -1,6 +1,8 @@
 
-import { _decorator, Component, Node, find, Sprite, SpriteFrame, resources, SpriteAtlas } from 'cc';
-import { MahjongMgr, MJNum, MJType } from './MahjongMgr';
+import { _decorator, Component, Node, find, Sprite, SpriteFrame, resources, SpriteAtlas, Game } from 'cc';
+import { GameData, SeatData } from './component/SeatData';
+import { MahjongMgr, MJNum, MJType, SeatSide } from './MahjongMgr';
+
 const { ccclass, property } = _decorator;
 
 /**
@@ -14,6 +16,16 @@ const { ccclass, property } = _decorator;
  * ManualUrl = https://docs.cocos.com/creator/3.4/manual/zh/
  *
  */
+
+
+enum MJGameNode {
+    Game = "Game",
+    Myself = "Myself",
+    Right = "Right",
+    Folds = "Folds",
+    Holds = "Holds",
+    ChuPai = "ChuPai"
+}
  
 @ccclass('mjgame')
 export class mjgame extends Component {
@@ -23,62 +35,84 @@ export class mjgame extends Component {
 
     private _bottomFolds = new Array<Sprite>();
 
+    private _game = new GameData();
     
+    private _sides = [SeatSide.Myself, SeatSide.Right, SeatSide.Up, SeatSide.Left];
 
     start () {
         console.log("mjgame start...");
-        // var holds = find("Canvas/game/myself/holds", this.node);
-        // var tNode = this.node;
-        // var game = this.node.getChildByName("game");
-        // var holds = this.node.getChildByPath("game/myself/holds");
-        // for (let index = 0; index < holds.children.length; index++) {
-        //     const element = holds.children[index];
-        //     var thisSprite = element.getComponent(Sprite);
-        //     thisSprite.spriteFrame
-        //     console.log("element"+element);
-
-        // }
-
-        // resources.load("textures/MJ/bottom/B_bamboo_1/spriteFrame", SpriteFrame, (err, data) => {
-        //     for (let index = 0; index < holds.children.length; index++) {
-        //         const element = holds.children[index];
-        //         var thisSprite = element.getComponent(Sprite);
-        //         thisSprite.spriteFrame = data;
-        //     }
-        // });
-        // var spr = MahjongMgr.instance.getMJName(MJType.TIAO, MJNum.Five);
-        // console.log("mjname: "+spr);
-        // resources.load("textures/MJ/bottom/Z_bottom", SpriteAtlas, (err, atlas) => {
-            // for (let index = 0; index < 9; index++) {
-            //     const spriteName = "B_bamboo_"+(index+1);
-            //     const element = holds.children[index];
-                // element.getComponent(Sprite).spriteFrame = atlas.getSpriteFrame(spriteName);
-            // }
-            // var mah = new MahjongMgr();
-            // holds.children[1].getComponent(Sprite).spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_1");
-        // });
-        // holds.children[2].getComponent(Sprite).spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_2");
-        // holds.children[5].getComponent(Sprite).spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_5");
-        // holds.children[0].getComponent(Sprite).spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_8");
-        this.testMJSprite()
+        this.hideAllChuPai();
+        var game = new GameData();
+        this.refreshMahjongs(game);
     }
 
     onLoad() {
         console.log("mjgame on load...");
-
     }
 
-    testMJSprite() {
-        var holds = this.node.getChildByPath("game/myself/holds");
-        for (let index = 0; index < holds.children.length; index++) {
-            const element = holds.children[index];
-            var thisSprite = element.getComponent(Sprite);
-            this._myHolds.push(thisSprite);
+    refreshMahjongs(game: GameData) {
+        for (let index = 0; index < game.seats.length; index++) {
+            const seat = this.getIndexSeat(game, index);
+            this.refreshFolds(seat.side, seat.folds);
         }
-        this._myHolds[1].spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_1");
-        this._myHolds[2].spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_2");
-        this._myHolds[3].spriteFrame = MahjongMgr.instance.getBottomMJSpriteFrame("B_bamboo_3");
     }
+
+    getIndexSeat(game: GameData, index: number): SeatData {
+        var seat: SeatData = game.seats[index];
+        seat.side = this._sides[index];
+        return seat
+    }
+
+    refreshFolds(side: SeatSide, folds: number[]) {
+        var foldNodes = this.getFolds(side);
+        
+        for (let index = 0; index < foldNodes.length; index++) {
+            const foldNode = foldNodes[index];
+            foldNode.active = index < folds.length;
+            if (index < folds.length) {
+                const mjNum = folds[index];
+                var foldSprite = foldNodes[index].getComponent(Sprite);
+                var mjFrame = MahjongMgr.instance.getFoldMJSpriteFrame(side, mjNum);
+                foldSprite.spriteFrame = mjFrame;
+            }
+        }
+    }
+
+    hideAllChuPai() {
+        this.hideChuPai(SeatSide.Myself);
+        this.hideChuPai(SeatSide.Left);
+        this.hideChuPai(SeatSide.Right);
+        this.hideChuPai(SeatSide.Up);
+    }
+
+    hideChuPai(side: SeatSide) {
+        this.node.getChildByPath(MJGameNode.Game+'/'+side+'/'+MJGameNode.ChuPai).active = false;
+    }
+
+    getFolds(side: SeatSide): Node[] {
+        var gameNode = this.node.getChildByName(MJGameNode.Game);
+        var foldsNode = gameNode.getChildByName(side).getChildByName(MJGameNode.Folds);
+        if (side == SeatSide.Up) {
+            // 调整node顺序
+            return foldsNode.children.reverse();
+        } else if (side == SeatSide.Right) {
+            // 逐行调整顺序
+            var foldsCount = foldsNode.children.length;
+            var firstLineFolds = foldsNode.children.slice(0, foldsCount/2);
+            var secondLineFolds = foldsNode.children.slice(foldsCount/2, foldsCount);
+            return firstLineFolds.reverse().concat(secondLineFolds.reverse());
+        } 
+        else {
+            return foldsNode.children;
+        }
+    }
+
+    getHolds(side: SeatSide): Node[] {
+        var gameNode = this.node.getChildByPath(MJGameNode.Game+'/'+side+'/'+MJGameNode.Holds);
+        var holdsNode = gameNode.getChildByName(side);
+        return holdsNode.children;
+    }
+
 
 }
 
