@@ -75,9 +75,18 @@ export class MahjongMgr extends Component {
     @property(SpriteAtlas)
     private myselfHoldsAtlas: SpriteAtlas = null;
 
+    @property(SpriteAtlas)
+    private emptyAtlas: SpriteAtlas = null;
+
 
     @property(SpriteFrame)
     private B_bamboo_1: SpriteFrame = null;
+
+    private readonly emptyHoldMap: Map<SeatSide, string> = new Map([
+        [SeatSide.Right, "e_mj_right"],
+        [SeatSide.Up, "e_mj_up"],
+        [SeatSide.Left, "e_mj_left"]
+    ]);
 
     getSideFoldsAtlas(side: SeatSide): SpriteAtlas {
         switch (side) {
@@ -132,9 +141,25 @@ export class MahjongMgr extends Component {
         return atlas.getSpriteFrame(mjName);
     }
     
+    getHoldMJSpriteFrame(side: SeatSide, num: number | null): SpriteFrame {
+        if (side == SeatSide.Myself) {
+            var mjName = this.getMyselfHoldMJSpriteFrameName(num);
+            console.log("num: "+num+"; sprite: " + mjName);
+            
+            return this.myselfHoldsAtlas.getSpriteFrame(mjName);
+        } else {
+            return this.getEmptyHoldMJSpriteFrame(side);
+        }
+    }
 
-    public getBottomMJSpriteFrame(mjId: string): SpriteFrame {
-        return this.bottomFoldsAtlas.getSpriteFrame(mjId);
+    getMyselfHoldMJSpriteFrameName(num: number): string {
+        var mjType = this.getMJType(num);
+        var mjNum = this.getMJAbsNum(num);
+        return "M_" + mjType + "_" + mjNum;
+    }
+
+    getEmptyHoldMJSpriteFrame(side: SeatSide): SpriteFrame {
+        return this.emptyAtlas.getSpriteFrame(this.emptyHoldMap.get(side));
     }
 
     // public getHoldMJSpriteFrame(type: MJType, num: MJNum): SpriteFrame {

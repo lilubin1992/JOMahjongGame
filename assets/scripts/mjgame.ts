@@ -54,6 +54,7 @@ export class mjgame extends Component {
         for (let index = 0; index < game.seats.length; index++) {
             const seat = this.getIndexSeat(game, index);
             this.refreshFolds(seat.side, seat.folds);
+            this.refreshHolds(seat.side, seat.holds);
         }
     }
 
@@ -75,6 +76,52 @@ export class mjgame extends Component {
                 var mjFrame = MahjongMgr.instance.getFoldMJSpriteFrame(side, mjNum);
                 foldSprite.spriteFrame = mjFrame;
             }
+        }
+    }
+
+    refreshHolds(side: SeatSide, holds: number[]) {
+        if (side == SeatSide.Myself) {
+            this.refreshMyselfHolds(holds);
+        } else {
+            this.refreshOtherHolds(side, holds.length);
+        }
+    }
+
+    refreshMyselfHolds(holds: number[]) {
+        var holdNodes = this.getHolds(SeatSide.Myself);
+
+        for (let index = 0; index < holdNodes.length; index++) {
+            const holdNode = holdNodes[index];
+            holdNode.active = index < holds.length;
+            if (index < holds.length) {
+                const mjNum = holds[index];
+                var holdSprite = holdNodes[index].getComponent(Sprite);
+                var mjFrame = MahjongMgr.instance.getHoldMJSpriteFrame(SeatSide.Myself, mjNum);
+                holdSprite.spriteFrame = mjFrame;
+            }
+        }
+    }
+
+    refreshOtherHolds(side: SeatSide, holdCount: number) {
+        var holdNodes = this.getHolds(side);
+        var remainCount = holdNodes.length - holdCount;
+
+        if (side == SeatSide.Right || side == SeatSide.Up) {
+            for (let index = 0; index < holdNodes.length; index++) {
+                const node = holdNodes[index];
+                node.active = index >= remainCount;    
+            }
+        } else {
+            for (let index = 0; index < holdNodes.length; index++) {
+                const node = holdNodes[index];
+                node.active = index < holdCount;    
+            }
+        }
+
+        for (let index = 0; index < holdNodes.length; index++) {
+            var holdSprite = holdNodes[index].getComponent(Sprite);
+            var mjFrame = MahjongMgr.instance.getHoldMJSpriteFrame(side, null);
+            holdSprite.spriteFrame = mjFrame;
         }
     }
 
@@ -108,8 +155,7 @@ export class mjgame extends Component {
     }
 
     getHolds(side: SeatSide): Node[] {
-        var gameNode = this.node.getChildByPath(MJGameNode.Game+'/'+side+'/'+MJGameNode.Holds);
-        var holdsNode = gameNode.getChildByName(side);
+        var holdsNode = this.node.getChildByPath(MJGameNode.Game+'/'+side+'/'+MJGameNode.Holds);
         return holdsNode.children;
     }
 

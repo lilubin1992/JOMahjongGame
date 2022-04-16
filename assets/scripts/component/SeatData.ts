@@ -4,7 +4,7 @@ import { SeatSide } from "../MahjongMgr";
 export class SeatData {
 
     private _folds: number[] | null = null;
-    public _holds: number[] | null = null; 
+    private _holds: number[] | null = null; 
 
     private _side: SeatSide = null;
 
@@ -12,7 +12,7 @@ export class SeatData {
         this._folds = new Array()
         this._holds = new Array()
         this._folds.push(0,1,2,3,4,5,6,9,10,11,18,19,20);
-        this._holds.push(0,1,2,9,10,11,18,19,20)
+        this._holds.push(0,0,2,3,4,5,5,6,7,8)
     }
     
     public get folds() : number[] {
@@ -23,6 +23,10 @@ export class SeatData {
         return this._side;
     }
 
+    public get holds() : number[] {
+        return this._holds;
+    }
+    
     
     public set side(v : SeatSide) {
         this._side = v;
