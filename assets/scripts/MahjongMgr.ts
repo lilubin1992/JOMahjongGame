@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Node, SpriteAtlas, SpriteFrame } from 'cc';
+import { _decorator, Component, Node, SpriteAtlas, SpriteFrame, Prefab, instantiate } from 'cc';
 const { ccclass, property } = _decorator;
 
 /**
@@ -78,15 +78,21 @@ export class MahjongMgr extends Component {
     @property(SpriteAtlas)
     private emptyAtlas: SpriteAtlas = null;
 
+    @property(Prefab)
+    private pengGangLeftRight: Prefab = null;
 
-    @property(SpriteFrame)
-    private B_bamboo_1: SpriteFrame = null;
+    @property(Prefab)
+    private pengGangUpDown: Prefab = null;
 
     private readonly emptyHoldMap: Map<SeatSide, string> = new Map([
         [SeatSide.Right, "e_mj_right"],
         [SeatSide.Up, "e_mj_up"],
         [SeatSide.Left, "e_mj_left"]
     ]);
+
+    getPengGangLeftRightNode(): Node {
+        return instantiate(this.pengGangLeftRight);
+    }
 
     getSideFoldsAtlas(side: SeatSide): SpriteAtlas {
         switch (side) {

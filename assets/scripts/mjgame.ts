@@ -24,7 +24,8 @@ enum MJGameNode {
     Right = "Right",
     Folds = "Folds",
     Holds = "Holds",
-    ChuPai = "ChuPai"
+    ChuPai = "ChuPai",
+    PengGang = "PengGangs"
 }
  
 @ccclass('mjgame')
@@ -55,6 +56,7 @@ export class mjgame extends Component {
             const seat = this.getIndexSeat(game, index);
             this.refreshFolds(seat.side, seat.folds);
             this.refreshHolds(seat.side, seat.holds);
+            this.refreshPengGang(seat.side);
         }
     }
 
@@ -125,6 +127,16 @@ export class mjgame extends Component {
         }
     }
 
+    refreshPengGang(side: SeatSide) {
+        var rootNode = this.getPengGangRootNode(side);
+        if (side == SeatSide.Right || side == SeatSide.Left) {
+            if (rootNode.children.length == 0) {
+                var pg = MahjongMgr.instance.getPengGangLeftRightNode();
+                rootNode.addChild(pg);
+            }
+        }
+    }
+
     hideAllChuPai() {
         this.hideChuPai(SeatSide.Myself);
         this.hideChuPai(SeatSide.Left);
@@ -158,6 +170,12 @@ export class mjgame extends Component {
         var holdsNode = this.node.getChildByPath(MJGameNode.Game+'/'+side+'/'+MJGameNode.Holds);
         return holdsNode.children;
     }
+
+    getPengGangRootNode(side: SeatSide): Node {
+        var node = this.node.getChildByPath(MJGameNode.Game+'/'+side+'/'+MJGameNode.PengGang);
+        return node
+    }
+
 
 
 }
