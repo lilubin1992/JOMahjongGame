@@ -90,8 +90,12 @@ export class MahjongMgr extends Component {
         [SeatSide.Left, "e_mj_left"]
     ]);
 
-    getPengGangLeftRightNode(): Node {
+    public getPengGangLeftRightNode(): Node {
         return instantiate(this.pengGangLeftRight);
+    }
+
+    public getPengGangUpDownNode(): Node {
+        return instantiate(this.pengGangUpDown);
     }
 
     getSideFoldsAtlas(side: SeatSide): SpriteAtlas {

@@ -1,7 +1,8 @@
 
-import { _decorator, Component, Node, find, Sprite, SpriteFrame, resources, SpriteAtlas, Game } from 'cc';
+import { _decorator, Component, Node, find, Sprite, SpriteFrame, resources, SpriteAtlas, Game, director } from 'cc';
 import { GameData, SeatData } from './component/SeatData';
 import { MahjongMgr, MJNum, MJType, SeatSide } from './MahjongMgr';
+import { PengGangMgr } from './PengGangMgr';
 
 const { ccclass, property } = _decorator;
 
@@ -127,12 +128,47 @@ export class mjgame extends Component {
         }
     }
 
+    private pgs: number[][] = null;
+
     refreshPengGang(side: SeatSide) {
+
+        this.pgs = [[11,12,13], [18,18,18]];
+
+        var width = 200;
+        var height = 100;
+
         var rootNode = this.getPengGangRootNode(side);
         if (side == SeatSide.Right || side == SeatSide.Left) {
             if (rootNode.children.length == 0) {
-                var pg = MahjongMgr.instance.getPengGangLeftRightNode();
-                rootNode.addChild(pg);
+                for (let index = 0; index < this.pgs.length; index++) {
+                    const pgNum = this.pgs[index];
+                    var pg = MahjongMgr.instance.getPengGangLeftRightNode();
+                    if (side == SeatSide.Right) {
+                        pg.setPosition(0, -index * height,0);
+                    } else {
+                        pg.setPosition(0, index * height,0);
+                    }
+                    var pgIns: PengGangMgr = pg.getComponent(PengGangMgr);
+                    pgIns.initMahjong(side, pgNum);
+                    rootNode.addChild(pg);
+                }
+                
+            }
+        } else {
+            if (rootNode.children.length == 0) {
+                for (let index = 0; index < this.pgs.length; index++) {
+                    const pgNum = this.pgs[index];
+                    var pg = MahjongMgr.instance.getPengGangUpDownNode();
+                    if (side == SeatSide.Myself) {
+                        pg.setPosition(-index * width,0,0);
+                    } else {
+                        pg.setPosition(index * width,0,0);
+                    }
+                    var pgIns: PengGangMgr = pg.getComponent(PengGangMgr);
+                    pgIns.initMahjong(side, pgNum);
+                    rootNode.addChild(pg); 
+                }
+                
             }
         }
     }

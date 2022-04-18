@@ -23,7 +23,7 @@ const { ccclass, property } = _decorator;
 @ccclass('PengGangMgr')
 export class PengGangMgr extends Component {
 
-    initMahjong(side: SeatSide, num: number[]) {
+    public initMahjong(side: SeatSide, num: number[]) {
         var gangNode = this.node.getChildByName(PengGangNode.Gang);
         gangNode.active = num.length == 4;
 
@@ -36,7 +36,7 @@ export class PengGangMgr extends Component {
 
     start () {
         // [3]
-        this.initMahjong(SeatSide.Right, [1,2,3]);
+        // this.initMahjong(SeatSide.Right, [1,2,3]);
     }
 
     
