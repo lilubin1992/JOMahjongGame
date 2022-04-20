@@ -1,5 +1,6 @@
 
 import { _decorator, Component, Node, find, Sprite, SpriteFrame, resources, SpriteAtlas, Game, director } from 'cc';
+import { MockMachine } from './component/MockMachine';
 import { GameData, SeatData } from './component/SeatData';
 import { MahjongMgr, MJNum, MJType, SeatSide } from './MahjongMgr';
 import { PengGangMgr } from './PengGangMgr';
@@ -212,7 +213,20 @@ export class mjgame extends Component {
         return node
     }
 
+    moPai() {
+        const pai = MockMachine.instance().moPai();
+        console.log(">>> mo pai: " + pai);
+    }
 
+    buPai() {
+        const pai = MockMachine.instance().buPai();
+        console.log(">>> bu pai: " + pai);
+    }
+
+    mockNext() {
+        console.log("next...");
+        MockMachine.instance().shuffle();
+    }
 
 }
 
