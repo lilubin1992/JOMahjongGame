@@ -5,7 +5,7 @@ export class MockMachine {
 
     private static _inst:MockMachine;
 
-    private _turn: number = 0;
+    private _turn: number = -1;
 
     private _cardStack: number[] = null;
 
@@ -28,6 +28,9 @@ export class MockMachine {
         return this._turn;
     }
 
+    public set turn(v : number) {
+        this._turn = v % 4;
+    }
     
     public get seats() : SeatData[] {
         return this._seats;
@@ -43,6 +46,7 @@ export class MockMachine {
         }
     }
     
+    // 摸4张牌
     moPaiDeal(): number[] {
         return [this.moPai(), this.moPai(), this.moPai(), this.moPai()]
     }
@@ -57,6 +61,19 @@ export class MockMachine {
         return this._cardStack.pop();
     }
 
+    chuPai() {
+        var seat = this.seats[this.turn];
+        const pai = seat.holds.pop();
+        seat.folds.push(pai);
+    }
+
+    nextTurn() {
+        this.turn++;
+        const card = this.moPai();
+        var seat = this.seats[this.turn];
+        seat.holds.push(card);
+    }
+
     private total: number = 27;
 
     shuffle() {
@@ -67,7 +84,7 @@ export class MockMachine {
                 this._cardStack.push(mjNum);                    
             }           
         }
-        console.log(">>>mjNum: "+this._cardStack);
+        // console.log(">>>mjNum: "+this._cardStack);
 
         const length = this._cardStack.length;
         for (let index = 0; index < length; index++) {
@@ -77,7 +94,7 @@ export class MockMachine {
             this._cardStack[index] = this._cardStack[exchangedIndex];
             this._cardStack[exchangedIndex] = temp;
         }
-        console.log("<<<mjNum: "+this._cardStack);
+        // console.log("<<<mjNum: "+this._cardStack);
     }
 
     deal(): number[][] {
@@ -87,13 +104,8 @@ export class MockMachine {
                 var element = result[j];
                 element = element.concat(this.moPaiDeal());
                 result[j] = element;
-            }
-            // result.forEach(element => {
-            //     element = element.concat(this.moPaiDeal());
-            // });             
-        }
-        console.log("deal: "+result);
-        
+            }            
+        }        
         return result
     }
 

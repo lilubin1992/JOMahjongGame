@@ -65,5 +65,15 @@ export class GameData {
     public get seats() : SeatData[] {
         return this._seats;
     }
+
+    moPai() {
+        MockMachine.instance().nextTurn();
+        this._seats = MockMachine.instance().seats;
+    }
     
+    chuPai() {
+        MockMachine.instance().chuPai();
+        this._seats = MockMachine.instance().seats;
+    }
+
 }

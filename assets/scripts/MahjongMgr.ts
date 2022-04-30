@@ -52,8 +52,6 @@ enum MJSide {
     Up = "B"
 }
 
-
- 
 @ccclass('MahjongMgr')
 export class MahjongMgr extends Component {
 
@@ -153,9 +151,7 @@ export class MahjongMgr extends Component {
     
     getHoldMJSpriteFrame(side: SeatSide, num: number | null): SpriteFrame {
         if (side == SeatSide.Myself) {
-            var mjName = this.getMyselfHoldMJSpriteFrameName(num);
-            console.log("num: "+num+"; sprite: " + mjName);
-            
+            var mjName = this.getMyselfHoldMJSpriteFrameName(num);            
             return this.myselfHoldsAtlas.getSpriteFrame(mjName);
         } else {
             return this.getEmptyHoldMJSpriteFrame(side);
@@ -178,12 +174,12 @@ export class MahjongMgr extends Component {
     // }
 
     start () {
-        console.log("mahjongmgr start...");
+        // console.log("mahjongmgr start...");
         
     }
 
     onLoad() {
-        console.log("mahjongmgr onload...");
+        // console.log("mahjongmgr onload...");
         // onLoad中对该静态实例变量赋值，才可以加载出设置的spriteFrame等相关属性
         MahjongMgr._inst = this;
     }

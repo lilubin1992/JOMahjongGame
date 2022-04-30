@@ -33,24 +33,39 @@ enum MJGameNode {
 @ccclass('mjgame')
 export class mjgame extends Component {
 
-    // private _myHolds: Array<SpriteFrame> = null;
-    private _myHolds = new Array<Sprite>();
-
-    private _bottomFolds = new Array<Sprite>();
-
     private _game = new GameData();
     
     private _sides = [SeatSide.Myself, SeatSide.Right, SeatSide.Up, SeatSide.Left];
 
+    private _foldsMap: Map<string, Sprite[]> = null;
+
+    private _upFolds: Node[] = null;
+
+    public get foldsMap() : Map<string, Sprite[]> {
+        return this._foldsMap;
+    }
+    
+    public set upFolds(v : Node[]) {
+        console.log(">>> set upFolds first node: " + v[0].name);
+        this._upFolds = v;
+    }
+    
+    public get upFolds() : Node[] {
+        return this._upFolds;
+    }
+
     start () {
-        console.log("mjgame start...");
+        // console.log("mjgame start...");
         this.hideAllChuPai();
-        var game = new GameData();
-        this.refreshMahjongs(game);
+        this.initFoldsMap();
+        this.testUpFold1();
+        this._game = new GameData();
+        this.refreshMahjongs(this._game);
+        this.testUpFold1();
     }
 
     onLoad() {
-        console.log("mjgame on load...");
+        // console.log("mjgame onload...");
     }
 
     refreshMahjongs(game: GameData) {
@@ -69,18 +84,38 @@ export class mjgame extends Component {
     }
 
     refreshFolds(side: SeatSide, folds: number[]) {
-        var foldNodes = this.getFolds(side);
-        
-        for (let index = 0; index < foldNodes.length; index++) {
-            const foldNode = foldNodes[index];
-            foldNode.active = index < folds.length;
-            if (index < folds.length) {
-                const mjNum = folds[index];
-                var foldSprite = foldNodes[index].getComponent(Sprite);
-                var mjFrame = MahjongMgr.instance.getFoldMJSpriteFrame(side, mjNum);
-                foldSprite.spriteFrame = mjFrame;
+        var foldNodes = this.foldsMap[side];
+        const showCount = folds.length;
+        if (side == SeatSide.Up) {
+            // this.testUpFold1();
+            foldNodes = this.upFolds;
+            const startIndex = foldNodes.length - showCount;
+            for (let index = foldNodes.length-1; index >= 0; index--) {
+                const foldNode = foldNodes[index];
+                console.log("up index "+index);
+                foldNode.active = index >= startIndex;
+                var mjIndex = 0;
+                if (foldNode.active) {
+                    const mjNum = folds[foldNodes.length-index-1];
+                    var foldSprite = foldNodes[index].getComponent(Sprite);
+                    var mjFrame = MahjongMgr.instance.getFoldMJSpriteFrame(side, mjNum);
+                    foldSprite.spriteFrame = mjFrame;
+                    mjIndex++;
+                }
+            }
+        } else {
+            for (let index = 0; index < foldNodes.length; index++) {
+                const foldNode = foldNodes[index];
+                foldNode.active = index < folds.length;
+                if (index < folds.length) {
+                    const mjNum = folds[index];
+                    var foldSprite = foldNodes[index].getComponent(Sprite);
+                    var mjFrame = MahjongMgr.instance.getFoldMJSpriteFrame(side, mjNum);
+                    foldSprite.spriteFrame = mjFrame;
+                }
             }
         }
+    
     }
 
     refreshHolds(side: SeatSide, holds: number[]) {
@@ -133,7 +168,7 @@ export class mjgame extends Component {
 
     refreshPengGang(side: SeatSide) {
 
-        this.pgs = [[11,12,13], [18,18,18]];
+        this.pgs = [];
 
         var width = 200;
         var height = 100;
@@ -185,20 +220,45 @@ export class mjgame extends Component {
         this.node.getChildByPath(MJGameNode.Game+'/'+side+'/'+MJGameNode.ChuPai).active = false;
     }
 
+    initFoldsMap() {
+        this._foldsMap = new Map();
+        this._sides.forEach(element => {
+            var children = this.getFolds(element);
+            if (element == SeatSide.Up) {
+                this._foldsMap[element] = new Array();
+                this.upFolds = children;
+            } else {
+                this._foldsMap[element] = children;
+            }
+        }); 
+    }
+
+    testUpFold1() {
+        // var children: Node[] = this.foldsMap[SeatSide.Up];
+        console.log(">>> first up fold node: " + this.upFolds[0].name);
+    }
+
     getFolds(side: SeatSide): Node[] {
         var gameNode = this.node.getChildByName(MJGameNode.Game);
         var foldsNode = gameNode.getChildByName(side).getChildByName(MJGameNode.Folds);
-        if (side == SeatSide.Up) {
+        
+        /*if (side == SeatSide.Up) {
+            console.log(">>> get folds..."+ side);
             // 调整node顺序
-            return foldsNode.children.reverse();
-        } else if (side == SeatSide.Right) {
+            // var children = foldsNode.children.reverse();            
+            var children1 = foldsNode.children;
+            var revChildren: Node[] = children1.reverse();
+            // console.log(">>>node1 name: " + revChildren[0].name);
+            
+            return revChildren;
+        } else */
+        if (side == SeatSide.Right) {
             // 逐行调整顺序
             var foldsCount = foldsNode.children.length;
             var firstLineFolds = foldsNode.children.slice(0, foldsCount/2);
             var secondLineFolds = foldsNode.children.slice(foldsCount/2, foldsCount);
             return firstLineFolds.reverse().concat(secondLineFolds.reverse());
-        } 
-        else {
+        } else {
             return foldsNode.children;
         }
     }
@@ -214,13 +274,21 @@ export class mjgame extends Component {
     }
 
     moPai() {
-        const pai = MockMachine.instance().moPai();
-        console.log(">>> mo pai: " + pai);
+        this.testUpFold1()
+        console.log(">>> mo pai: ");
+        this._game.moPai();
+        this.refreshMahjongs(this._game);
     }
 
     buPai() {
         const pai = MockMachine.instance().buPai();
         console.log(">>> bu pai: " + pai);
+    }
+
+    chuPai() {
+        console.log(">>> chu pai...");
+        this._game.chuPai();
+        this.refreshMahjongs(this._game);
     }
 
     mockNext() {
